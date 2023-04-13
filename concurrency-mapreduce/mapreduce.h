@@ -18,5 +18,6 @@ void MR_Run(int argc, char *argv[],
 	    Partitioner partition);
 
 // TODO: define a structure for intermediate key, value
+static void start_mapper(int num_mappers, Mapper map, int argc, char * argv[]);
 
 #endif // __mapreduce_h__
