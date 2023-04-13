@@ -20,7 +20,9 @@ static void start_mapper(int num_mappers, Mapper map, int argc, char * argv[]) {
         tpool_add_work(threads_pool, (thread_func_t)map, filename);
     }
 
+    printf("Waiting thread to finish work in queue\n");
     tpool_wait(threads_pool);
+    printf("Done!\n");
     free(threads_pool);
 }
 
