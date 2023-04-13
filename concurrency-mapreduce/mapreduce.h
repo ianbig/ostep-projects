@@ -17,4 +17,6 @@ void MR_Run(int argc, char *argv[],
 	    Reducer reduce, int num_reducers, 
 	    Partitioner partition);
 
+// TODO: define a structure for intermediate key, value
+
 #endif // __mapreduce_h__

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g
+CFLAGS = -g -pthread
 
 OBJS = mapreduce.o
 filecounts: $(OBJS) filecounts.c
