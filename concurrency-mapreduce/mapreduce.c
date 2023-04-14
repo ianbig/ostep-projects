@@ -1,12 +1,14 @@
-#include "mapreduce.h"
-#include "tpool.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "mapreduce.h"
+#include "tpool.h"
+#include "hashmap.h"
+
 void MR_Emit(char *key, char *value) {
-    // TODO: stub function
-    printf("%s: %s\n", key, value);
+    // TODO: store the key value to TLS hashmap
+    
 }
 
 unsigned long MR_DefaultHashPartition(char *key, int num_partitions) {
@@ -33,6 +35,5 @@ void MR_Run(int argc, char *argv[],
 	    Reducer reduce, int num_reducers, 
 	    Partitioner partition) {
         start_mapper(num_mappers, map, argc, argv);
-        // start_shuffler();
         // start_reducer();
 }

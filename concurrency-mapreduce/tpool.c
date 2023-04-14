@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <assert.h>
+
 #include "tpool.h"
+#include "hashmap.h"
 
 /**
  * create work object with passed in function, and arguments
@@ -86,6 +88,8 @@ static void * worker(void * tpool_args) {
     if (tpool == NULL) {
         return NULL;
     }
+    // TODO: make a hashmap that is thread local storage
+    // hashmap_t * hashmap =  hashmap_create(10);
 
     pthread_mutex_lock(&(tpool->tpool_lck));
     while (tpool->work_queue.queue_sz != 0) {
@@ -103,6 +107,8 @@ static void * worker(void * tpool_args) {
     tpool->working_thread_count--;
     pthread_cond_signal(&(tpool->exit_cond));
     pthread_mutex_unlock(&(tpool->tpool_lck));
+
+    // TODO: push the hashmap key-value to the intermediate data strucutre
 
     return NULL;
 }
