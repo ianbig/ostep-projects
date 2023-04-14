@@ -2,10 +2,11 @@ CC = gcc
 CFLAGS = -g -pthread
 
 OBJS = mapreduce.o tpool.o
+TESTS = test_work_queue
 
 filecounts: $(OBJS) filecounts.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) filecounts.c
-test: test_work_queue
+test: $(TESTS)
 	echo "compile test"
 test_work_queue: $(OBJS) test_work_queue.c
 	$(CC) $(CFLAGS) -o test_work_queue $(OBJS) test_work_queue.c
@@ -18,4 +19,4 @@ tpool.o: tpool.c tpool.h
 
 .PHONY: clean
 clean:
-	rm $(OBJS) filecounts
+	rm $(OBJS) filecounts $(TESTS)

@@ -6,7 +6,9 @@
 
 void Map(char *file_name) {
     FILE *fp = fopen(file_name, "r");
-    assert(fp != NULL);
+    if (fp == NULL) {
+        return;
+    }
 
     char *line = NULL;
     size_t size = 0;
@@ -16,6 +18,7 @@ void Map(char *file_name) {
             MR_Emit(token, "1");
         }
     }
+    
     free(line);
     fclose(fp);
 }

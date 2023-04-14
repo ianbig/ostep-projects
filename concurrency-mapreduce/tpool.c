@@ -77,15 +77,33 @@ void work_queue_print(work_queue_t * work_queue) {
     printf("NULL\n");
 }
 
+/**
+ * thread pool worker
+ * @return pointer tpye, if success, it would return NULL
+*/
 static void * worker(void * tpool_args) {
     tpool_t * tpool = tpool_args;
+    if (tpool == NULL) {
+        return NULL;
+    }
+
     pthread_mutex_lock(&(tpool->tpool_lck));
     while (tpool->work_queue.queue_sz != 0) {
+        work_t * work_to_process = work_queue_get(&(tpool->work_queue));
+        pthread_mutex_unlock(&(tpool->tpool_lck));
 
+        if (work_to_process == NULL) { break; }
+        work_to_process->task(work_to_process->args);
+        work_destroy(work_to_process);
+        
+        pthread_mutex_lock(&(tpool->tpool_lck));
+        tpool->work_queue.queue_sz--;
     }
+
     tpool->working_thread_count--;
     pthread_cond_signal(&(tpool->exit_cond));
     pthread_mutex_unlock(&(tpool->tpool_lck));
+
     return NULL;
 }
 
