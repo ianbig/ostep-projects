@@ -2,28 +2,45 @@
 #include <assert.h>
 #include "tpool.h"
 
-static void work_create(thread_func_t func, void * args) {
+static work_t * work_create(thread_func_t task, void * args) {
+    if (task == NULL) {
+        return NULL;
+    }
 
+    work_t * work = malloc(sizeof(*work));
+    work->task = task;
+    work->args = args;
+    work->next = NULL;
 }
 
-static void work_destroy(work_t work) {
-
+// TODO: after test move it back to static
+void work_destroy(work_t * work) {
+    free(work);
+    work = NULL;
 }
 
-static void work_queue_get(work_queue_t * work_queue) {
+// TODO: after test move it back to static
+work_t* work_queue_get(work_queue_t * work_queue) {
+    if (work_queue->head->next == NULL) {
+        return NULL;
+    }
 
+    work_t * to_remove_work = work_queue->head->next;
+    work_queue->head->next = to_remove_work->next;
+
+    return to_remove_work;
 }
 
 static void work_queue_init(work_queue_t * work_queue) {
     // TODO: add dummy node
     work_queue->head = malloc(sizeof(*(work_queue->head)));
-    work_queue->tail = malloc(sizeof(*(work_queue->tail)));
-    work_queue->head->next = work_queue->tail;
-    work_queue->tail->next = NULL;
+    work_queue->head->next = NULL;
+    work_queue->tail = work_queue->head;
+
     work_queue->queue_sz = 0;
 }
 
-static void work_queue_destroy(work_queue_t * work_queue) {
+void work_queue_destroy(work_queue_t * work_queue) {
     work_t * ptr = work_queue->head;
     while (ptr != NULL) {
         work_t * to_remove = ptr;
@@ -35,8 +52,19 @@ static void work_queue_destroy(work_queue_t * work_queue) {
 /**
  * print out worke queue info
 */
-static void print_work_queue(work_queue_t * work_queue) {
-
+void work_queue_print(work_queue_t * work_queue) {
+    work_t * ptr = work_queue->head;
+    while (ptr != NULL) {
+        if (ptr->args != NULL) {
+            int arg = *((int*)(ptr->args));
+            printf("task addr: %p, args: %d --> ", ptr->task, arg);
+        } else {
+            printf("Dummy Node --> ");
+        }
+        
+        ptr = ptr->next;
+    }
+    printf("NULL\n");
 }
 
 static void * worker(void * tpool_args) {
@@ -76,8 +104,24 @@ tpool_t * tpool_create_thread_pool(size_t num_threads) {
     return tpool;
 }
 
-void tpool_add_work(tpool_t * tpool, thread_func_t work, void * args) {
+/**
+ * add new work to work queue in thread pool
+ * @return: -1 means undefined behavior, 0 means add to queue successfully
+*/
+int tpool_add_work(tpool_t * tpool, thread_func_t task, void * args) {
+    if (tpool == NULL) {
+        return -1;
+    }
 
+    work_t * work = work_create(task, args);
+    assert(work != NULL);
+
+    pthread_mutex_lock(&(tpool->tpool_lck));
+    tpool->work_queue.tail->next = work;
+    tpool->work_queue.tail = work;
+    pthread_mutex_unlock(&(tpool->tpool_lck));
+
+    return 0;
 }
 
 /**
@@ -88,6 +132,14 @@ void tpool_wait(tpool_t * tpool) {
     while (tpool->working_thread_count != 0) {
         pthread_cond_wait(&(tpool->exit_cond), &(tpool->tpool_lck));
     }
-    work_queue_destroy(&(tpool->work_queue));
     pthread_mutex_unlock(&(tpool->tpool_lck));
+}
+
+/**
+ * recylc thread pool resource
+*/
+void tpool_destroy(tpool_t * tpool) {
+    work_queue_destroy(&(tpool->work_queue));
+    free(tpool);
+    tpool = NULL;
 }
