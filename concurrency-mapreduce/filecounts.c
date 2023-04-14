@@ -27,7 +27,7 @@ void Reduce(char *key, Getter get_next, int partition_number) {
     int count = 0;
     char *value;
     while ((value = get_next(key, partition_number)) != NULL)
-        count++;
+        count += atoi(value); // TODO: add error handling here
     printf("%s %d\n", key, count);
 }
 

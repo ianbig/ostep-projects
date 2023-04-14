@@ -6,12 +6,15 @@
 
 void MR_Emit(char *key, char *value) {
     // TODO: stub function
-    printf("%s: %s", key, value);
+    printf("%s: %s\n", key, value);
 }
 
 unsigned long MR_DefaultHashPartition(char *key, int num_partitions) {
-    // TODO: stub function
-    return 0;
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *key++) != '\0')
+        hash = hash * 33 + c;
+    return hash % num_partitions;
 }
 
 static void start_mapper(int num_mappers, Mapper map, int argc, char * argv[]) {
@@ -21,11 +24,8 @@ static void start_mapper(int num_mappers, Mapper map, int argc, char * argv[]) {
         tpool_add_work(threads_pool, (thread_func_t)map, filename);
     }
 
-    work_queue_print(&(threads_pool->work_queue));
-    printf("Waiting thread to finish work in queue\n");
     tpool_wait(threads_pool);
     tpool_destroy(threads_pool);
-    printf("Done!\n");
 }
 
 void MR_Run(int argc, char *argv[], 
