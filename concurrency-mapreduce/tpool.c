@@ -2,6 +2,10 @@
 #include <assert.h>
 #include "tpool.h"
 
+/**
+ * create work object with passed in function, and arguments
+ * @return work_t object
+*/
 static work_t * work_create(thread_func_t task, void * args) {
     if (task == NULL) {
         return NULL;
@@ -13,14 +17,15 @@ static work_t * work_create(thread_func_t task, void * args) {
     work->next = NULL;
 }
 
-// TODO: after test move it back to static
-void work_destroy(work_t * work) {
+static void work_destroy(work_t * work) {
     free(work);
     work = NULL;
 }
 
-// TODO: after test move it back to static
-work_t* work_queue_get(work_queue_t * work_queue) {
+/**
+ * get work from work queue
+*/
+static work_t* work_queue_get(work_queue_t * work_queue) {
     if (work_queue->head->next == NULL) {
         return NULL;
     }
@@ -31,8 +36,10 @@ work_t* work_queue_get(work_queue_t * work_queue) {
     return to_remove_work;
 }
 
+/**
+ * Initialize work queue
+*/
 static void work_queue_init(work_queue_t * work_queue) {
-    // TODO: add dummy node
     work_queue->head = malloc(sizeof(*(work_queue->head)));
     work_queue->head->next = NULL;
     work_queue->tail = work_queue->head;
@@ -40,6 +47,9 @@ static void work_queue_init(work_queue_t * work_queue) {
     work_queue->queue_sz = 0;
 }
 
+/**
+ * Destroy work Queue
+*/
 void work_queue_destroy(work_queue_t * work_queue) {
     work_t * ptr = work_queue->head;
     while (ptr != NULL) {
@@ -81,6 +91,7 @@ static void * worker(void * tpool_args) {
 
 /**
  * Create working threads specified by num_threads
+ * @return: object of tpool_t
 */
 tpool_t * tpool_create_thread_pool(size_t num_threads) {
     tpool_t * tpool = malloc(sizeof(*tpool));

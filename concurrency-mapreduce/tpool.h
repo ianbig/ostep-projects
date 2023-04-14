@@ -13,7 +13,7 @@ typedef struct _work_t {
 } work_t;
 
 static work_t* work_create(thread_func_t func, void * args);
-void work_destroy(work_t * work); // TODO: after test move it back to static
+static void work_destroy(work_t * work);
 
 /** 
  * queue to store pending work, if a thread want to get a work, called work_queue_get()
@@ -28,7 +28,7 @@ typedef struct _work_queue_t {
 } work_queue_t;
 
 static void work_queue_init(work_queue_t * work_queue);
-work_t* work_queue_get(work_queue_t * work_queue); // TODO: put static back after test
+static work_t* work_queue_get(work_queue_t * work_queue);
 static void work_queue_destroy(work_queue_t * work_queue);
 void work_queue_print(work_queue_t * work_queue);
 

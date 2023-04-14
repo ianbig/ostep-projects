@@ -1,5 +1,12 @@
 #include "tpool.h"
 
+/**
+ * This test is soley for the funcionality of work_queue_t.
+ * To enable this test, you have to remove static property of the following function:
+ *  work_queue_get()
+ *  work_destroy()
+*/
+
 void * work(void * args) {
 
 }
