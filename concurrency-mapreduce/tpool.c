@@ -66,8 +66,8 @@ void work_queue_print(work_queue_t * work_queue) {
     work_t * ptr = work_queue->head;
     while (ptr != NULL) {
         if (ptr->args != NULL) {
-            int arg = *((int*)(ptr->args));
-            printf("task addr: %p, args: %d --> ", ptr->task, arg);
+            char * arg = ((char*)(ptr->args));
+            printf("task addr: %p, args: %s --> ", ptr->task, arg);
         } else {
             printf("Dummy Node --> ");
         }
@@ -130,6 +130,7 @@ int tpool_add_work(tpool_t * tpool, thread_func_t task, void * args) {
     pthread_mutex_lock(&(tpool->tpool_lck));
     tpool->work_queue.tail->next = work;
     tpool->work_queue.tail = work;
+    tpool->work_queue.queue_sz++;
     pthread_mutex_unlock(&(tpool->tpool_lck));
 
     return 0;
