@@ -8,8 +8,10 @@ filecounts: $(OBJS) filecounts.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) filecounts.c
 test: $(TESTS)
 	echo "compile test"
-test_work_queue: $(OBJS) test_work_queue.c
-	$(CC) $(CFLAGS) -o test_work_queue $(OBJS) test_work_queue.c
+test_work_queue: tpool.c tpool.h test_work_queue.c
+	$(CC) $(CFLAGS) -o test_work_queue tpool.c test_work_queue.c -DDEBUG
+test_value: $(OBJS) test_value.c
+	$(CC) $(CFLAGS) -o $@ $(OBJS) test_value -DDEBUG
 
 mapreduce.o: mapreduce.c mapreduce.h
 	$(CC) $(CFLAGS) -c mapreduce.c

@@ -13,7 +13,11 @@ typedef struct _work_t {
 } work_t;
 
 static work_t* work_create(thread_func_t func, void * args);
+#ifndef DEBUG
 static void work_destroy(work_t * work);
+#else
+void work_destroy(work_t * work);
+#endif
 
 /** 
  * queue to store pending work, if a thread want to get a work, called work_queue_get()
@@ -28,8 +32,14 @@ typedef struct _work_queue_t {
 } work_queue_t;
 
 static void work_queue_init(work_queue_t * work_queue);
-static work_t* work_queue_get(work_queue_t * work_queue);
 static void work_queue_destroy(work_queue_t * work_queue);
+
+#ifndef DEBUG
+static work_t* work_queue_get(work_queue_t * work_queue);
+#else
+work_t* work_queue_get(work_queue_t * work_queue);
+#endif
+
 void work_queue_print(work_queue_t * work_queue);
 
 typedef struct _tpool_t {

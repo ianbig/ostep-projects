@@ -17,9 +17,14 @@ static work_t * work_create(thread_func_t task, void * args) {
     work->task = task;
     work->args = args;
     work->next = NULL;
+
+    return work;
 }
 
-static void work_destroy(work_t * work) {
+#ifndef DEBUG
+static 
+#endif
+void work_destroy(work_t * work) {
     free(work);
     work = NULL;
 }
@@ -27,7 +32,10 @@ static void work_destroy(work_t * work) {
 /**
  * get work from work queue
 */
-static work_t* work_queue_get(work_queue_t * work_queue) {
+#ifndef DEBUG
+static 
+#endif
+work_t* work_queue_get(work_queue_t * work_queue) {
     if (work_queue->head->next == NULL) {
         return NULL;
     }
@@ -108,7 +116,7 @@ static void * worker(void * tpool_args) {
     pthread_cond_signal(&(tpool->exit_cond));
     pthread_mutex_unlock(&(tpool->tpool_lck));
 
-    // TODO: push the hashmap key-value to the intermediate data strucutre
+    // TODO: push the hashmap value to the intermediate data strucutre
 
     return NULL;
 }
@@ -120,10 +128,6 @@ static void * worker(void * tpool_args) {
 tpool_t * tpool_create_thread_pool(size_t num_threads) {
     tpool_t * tpool = malloc(sizeof(*tpool));
     assert(tpool != NULL);
-
-    if (num_threads == 0) {
-        num_threads = 1;
-    }
 
     work_queue_init(&(tpool->work_queue));
     tpool->working_thread_count = num_threads;
@@ -149,7 +153,7 @@ int tpool_add_work(tpool_t * tpool, thread_func_t task, void * args) {
     }
 
     work_t * work = work_create(task, args);
-    assert(work != NULL);
+    if (work == NULL) {return -1; }
 
     pthread_mutex_lock(&(tpool->tpool_lck));
     tpool->work_queue.tail->next = work;
