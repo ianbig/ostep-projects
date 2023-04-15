@@ -18,26 +18,51 @@ value_t * value_create() {
 }
 
 void value_destroy(value_t * value) {
-    value_item_t * ptr = value->head;
-    while (ptr != NULL) {
-        value_item_t * to_remove = ptr;
-        ptr = ptr->next;
-        free(to_remove);
+    int item = value_pop(value);
+    while (item != -1) {
+        item = value_pop(value);
     }
 
+    free(value->head);
     free(value);
 }
 
 int value_append(value_t * value, int val) {
+    if (value == NULL)  { return -1; }
+    value_item_t * item = malloc(sizeof(*item));
+    item->value = val;
+    item->next = NULL;
+
+    value->tail->next = item;
+    value->tail = item;
+
+    value->sz++;
     return 0;
 }
 
 int value_pop(value_t * value) {
+    if (value == NULL || !value->sz) { return -1; }
+
+    value_item_t * to_remove = value->head->next;
+    value->head->next = to_remove->next;
+    int ret = to_remove->value;
+    to_remove->next = NULL;
+    free(to_remove);
+    value->sz--;
     return 0;
 }
 
 void value_print(value_t * value) {
-
+    value_item_t * ptr = value->head;
+    while (ptr != NULL) {
+        if (ptr->value == -1) {
+            printf("Dummy Node --> ");
+        } else {
+            printf(" %d -->", ptr->value);
+        }
+        ptr = ptr->next;
+    }
+    printf("NULL\n");
 }
 
 #ifndef DEBUG
