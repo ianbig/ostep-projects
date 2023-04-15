@@ -18,17 +18,19 @@ value_t * value_create() {
 }
 
 void value_destroy(value_t * value) {
-    int item = value_pop(value);
-    while (item != -1) {
-        item = value_pop(value);
+    if (value == NULL) { return; }
+    value_item_t * ptr = value->head;
+    while (ptr != NULL) {
+        value_item_t * to_remove = ptr;
+        ptr = ptr->next;
+        free(to_remove);
     }
-
-    free(value->head);
     free(value);
 }
 
 int value_append(value_t * value, int val) {
     if (value == NULL)  { return -1; }
+
     value_item_t * item = malloc(sizeof(*item));
     item->value = val;
     item->next = NULL;
@@ -49,7 +51,7 @@ int value_pop(value_t * value) {
     to_remove->next = NULL;
     free(to_remove);
     value->sz--;
-    return 0;
+    return ret;
 }
 
 void value_print(value_t * value) {
@@ -66,7 +68,9 @@ void value_print(value_t * value) {
 }
 
 #ifndef DEBUG
-static hash_item_t * hash_item_create(char * key, int * values, size_t values_sz) {
+static
+#endif 
+hash_item_t * hash_item_create(char * key, int * values, size_t values_sz) {
     hash_item_t * item = malloc(sizeof(*item));
     if (item == NULL) { return NULL; }
 
@@ -78,16 +82,18 @@ static hash_item_t * hash_item_create(char * key, int * values, size_t values_sz
 
     item->value = value_create();
     if (item->value == NULL) { return NULL; }
+    for (int i = 0; i < values_sz; i++) {
+        value_append(item->value, values[i]);
+    }
 
     return item;
 }
-#else
-hash_item_t * hash_item_create(char * key, int * values, size_t values_sz) {
-    return hash_item_create(key, values, values_sz);
-}
-#endif
 
-static void hash_item_destroy(hash_item_t * item) {
+#ifndef DEBUG
+static 
+#endif
+void hash_item_destroy(hash_item_t * item) {
+    if (item == NULL) { return; }
     free(item->key);
     value_destroy(item->value);
     free(item);
@@ -120,7 +126,7 @@ int list_append(linked_list_t * list, hash_item_t * item_to_append) {
 
     list->tail->next = item_to_append;
     list->tail = item_to_append;
-    list->tail = NULL;
+    list->sz++;
 
     return 0;
 }
@@ -131,9 +137,40 @@ hash_item_t * list_pop(linked_list_t * list) {
     }
 
     hash_item_t * item_to_remove = list->head->next;
+    if (item_to_remove == NULL) {
+        return NULL;
+    }
+
     list->head->next = item_to_remove->next;
     item_to_remove->next = NULL;
+    list->sz--;
     return item_to_remove;
+}
+
+void list_print(linked_list_t * list) {
+    hash_item_t * ptr = list->head;
+    while (ptr != NULL) {
+        if (ptr->key == NULL) {
+            printf("Dummy Node\n");
+        } else {
+            printf("%s: ", ptr->key);
+            value_print(ptr->value);
+        }
+        ptr = ptr->next;
+    }
+    printf("End of list\n");
+}
+
+void list_destroy(linked_list_t * list) {
+    if (list == NULL) { return; }
+
+    hash_item_t * ptr = list->head;
+    while (ptr != NULL) {
+        hash_item_t * to_remove = ptr;
+        ptr = ptr->next;
+        hash_item_destroy(to_remove);
+    }
+    free(list);
 }
 
 hashmap_t * hashmap_create(size_t bucket_sz, HashFunc hash_func) {
