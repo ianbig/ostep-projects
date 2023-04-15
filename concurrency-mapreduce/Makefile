@@ -2,14 +2,14 @@ CC = gcc
 CFLAGS = -g -pthread
 
 OBJS = mapreduce.o tpool.o hashmap.o
-TESTS = test_work_queue
+TESTS = test_thread_pool
 
 filecounts: $(OBJS) filecounts.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) filecounts.c
 test: $(TESTS)
 	echo "compile test"
-test_work_queue: tpool.c tpool.h test_work_queue.c
-	$(CC) $(CFLAGS) -o test_work_queue tpool.c test_work_queue.c -DDEBUG
+test_thread_pool: tpool.c tpool.h test_thread_pool.c
+	$(CC) $(CFLAGS) -o $@ tpool.c test_thread_pool.c -DDEBUG
 test_value: $(OBJS) test_value.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) test_value -DDEBUG
 

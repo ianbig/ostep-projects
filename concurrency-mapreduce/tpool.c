@@ -96,10 +96,15 @@ static void * worker(void * tpool_args) {
     if (tpool == NULL) {
         return NULL;
     }
+    
     // TODO: make a hashmap that is thread local storage
     // hashmap_t * hashmap =  hashmap_create(10);
 
     pthread_mutex_lock(&(tpool->tpool_lck));
+    while (!tpool->start) {
+        pthread_cond_wait(&(tpool->start_cond), &(tpool->tpool_lck));
+    }
+
     while (tpool->work_queue.queue_sz != 0) {
         work_t * work_to_process = work_queue_get(&(tpool->work_queue));
         pthread_mutex_unlock(&(tpool->tpool_lck));
@@ -133,6 +138,9 @@ tpool_t * tpool_create_thread_pool(size_t num_threads) {
     tpool->working_thread_count = num_threads;
     pthread_mutex_init(&(tpool->tpool_lck), NULL);
     pthread_cond_init(&(tpool->exit_cond), NULL);
+    pthread_cond_init(&(tpool->start_cond), NULL);
+    
+    tpool->start = FALSE;
 
     pthread_t thread;
     for (int i = 0; i < num_threads; i++) {
@@ -141,6 +149,13 @@ tpool_t * tpool_create_thread_pool(size_t num_threads) {
     }
 
     return tpool;
+}
+
+void tpool_start(tpool_t * tpool) {
+    pthread_mutex_lock(&(tpool->tpool_lck));
+    tpool->start = TRUE;
+    pthread_cond_broadcast(&(tpool->start_cond));
+    pthread_mutex_unlock(&(tpool->tpool_lck));
 }
 
 /**

@@ -42,14 +42,21 @@ work_t* work_queue_get(work_queue_t * work_queue);
 
 void work_queue_print(work_queue_t * work_queue);
 
+typedef int bool;
+#define TRUE 1
+#define FALSE 0
+
 typedef struct _tpool_t {
   work_queue_t work_queue;
   size_t working_thread_count;
   pthread_cond_t exit_cond;
+  pthread_cond_t start_cond;
   pthread_mutex_t tpool_lck;
+  bool start;
 } tpool_t;
 
 tpool_t * tpool_create_thread_pool(size_t num_threads);
+void tpool_start(tpool_t * tpool);
 int tpool_add_work(tpool_t * tpool, thread_func_t work, void * args);
 void tpool_wait(tpool_t * tpool);
 void tpool_destroy(tpool_t * tpool);

@@ -8,6 +8,7 @@
 
 void MR_Emit(char *key, char *value) {
     // TODO: store the key value to TLS hashmap
+    printf("%s: %s\n", key, value);
     
 }
 
@@ -25,7 +26,7 @@ static void start_mapper(int num_mappers, Mapper map, int argc, char * argv[]) {
         char * filename = argv[i];
         tpool_add_work(threads_pool, (thread_func_t)map, filename);
     }
-
+    tpool_start(threads_pool);
     tpool_wait(threads_pool);
     tpool_destroy(threads_pool);
 }
