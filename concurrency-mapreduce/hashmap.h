@@ -3,13 +3,19 @@
 
 #include <stdio.h>
 
-typedef int (*HashFunc)(void * key);
+typedef struct _value_item_t {
+  int value;
+  struct _value_item_t * next;
+} value_item_t;
+
+
 typedef struct _value_t {
-  int * values;
+  value_item_t * head;
+  value_item_t * tail;
   size_t sz;
 } value_t;
 
-value_t * value_create(int * values, size_t values_sz);
+value_t * value_create();
 int value_append(value_t * value, int val);
 int value_pop(value_t * value);
 void value_destroy(value_t * value);
@@ -45,11 +51,15 @@ void list_print(linked_list_t * list);
 void list_destroy(linked_list_t * list);
 hash_item_t * list_pop(linked_list_t * list);
 
+typedef int (*HashFunc)(void * key);
+
+
 typedef struct _hashmap_t {
   size_t bucket_sz;
   linked_list_t * hash_table;
   HashFunc hash_func;
 } hashmap_t;
+
 
 hashmap_t * hashmap_create(size_t bucket_sz, HashFunc hash_func);
 void hashmap_destroy(hashmap_t * hashmap);

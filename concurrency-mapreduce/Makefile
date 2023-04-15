@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -pthread
 
 OBJS = mapreduce.o tpool.o hashmap.o
-TESTS = test_thread_pool
+TESTS = test_thread_pool test_value
 
 filecounts: $(OBJS) filecounts.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) filecounts.c
@@ -11,7 +11,7 @@ test: $(TESTS)
 test_thread_pool: tpool.c tpool.h test_thread_pool.c
 	$(CC) $(CFLAGS) -o $@ tpool.c test_thread_pool.c -DDEBUG
 test_value: $(OBJS) test_value.c
-	$(CC) $(CFLAGS) -o $@ $(OBJS) test_value -DDEBUG
+	$(CC) $(CFLAGS) -o $@ $(OBJS) test_value.c -DDEBUG
 
 mapreduce.o: mapreduce.c mapreduce.h
 	$(CC) $(CFLAGS) -c mapreduce.c

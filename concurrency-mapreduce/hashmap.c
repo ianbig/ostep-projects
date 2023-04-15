@@ -3,23 +3,41 @@
 
 #include "hashmap.h"
 
-value_t * value_create(int * values, size_t values_sz) {
-    value_t * values_created = malloc(sizeof(*values_created) * 1);
+value_t * value_create() {
+    value_t * values_created = malloc(sizeof(*values_created));
     if (values_created == NULL) { return NULL; }
 
-    values_created->sz = values_sz;
-    values_created->values = malloc(sizeof(*(values_created->values)) * values_sz);
-    if (values_created->values == NULL) { return NULL; }
-    for (int i = 0; i < values_sz; i++) {
-        values_created->values[i] = values[i];
-    }
+    values_created->sz = 0;
+    values_created->head= malloc(sizeof(*(values_created->head)));
+    if (values_created == NULL) { return NULL; }
 
+    values_created->head->value = -1;
+    values_created->head->next = NULL;
+    values_created->tail = values_created->head;
     return values_created;
 }
 
 void value_destroy(value_t * value) {
-    free(value->values);
+    value_item_t * ptr = value->head;
+    while (ptr != NULL) {
+        value_item_t * to_remove = ptr;
+        ptr = ptr->next;
+        free(to_remove);
+    }
+
     free(value);
+}
+
+int value_append(value_t * value, int val) {
+    return 0;
+}
+
+int value_pop(value_t * value) {
+    return 0;
+}
+
+void value_print(value_t * value) {
+
 }
 
 #ifndef DEBUG
@@ -33,7 +51,7 @@ static hash_item_t * hash_item_create(char * key, int * values, size_t values_sz
     item->key[strlen(key)] = '\0';
 
 
-    item->value = value_create(values, values_sz);
+    item->value = value_create();
     if (item->value == NULL) { return NULL; }
 
     return item;
