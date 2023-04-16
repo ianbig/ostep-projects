@@ -176,6 +176,20 @@ hash_item_t * list_get(linked_list_t * list, size_t index) {
     return ptr;
 }
 
+hash_item_t * list_find(linked_list_t * list, char * key) {
+    hash_item_t * ptr = list->head->next;
+    hash_item_t * res = NULL;
+    while (ptr != NULL) {
+        if (strcmp(ptr->key, key) == 0) {
+            res = ptr;
+            break;
+        }
+        ptr = ptr->next;
+    }
+
+    return res;
+}
+
 void list_print(linked_list_t * list) {
     hash_item_t * ptr = list->head;
     while (ptr != NULL) {
@@ -230,8 +244,15 @@ void hashmap_destroy(hashmap_t * hashmap) {
 
 void hashmap_insert(hashmap_t * hashmap, char * key, int * value, size_t value_sz) {
     int bucket_index = hashmap->hash_func(key) % hashmap->bucket_sz;
-    hash_item_t * item = hash_item_create(key, value, value_sz);
-    list_append(hashmap->hash_table[bucket_index], item);
+    hash_item_t * item_found = list_find(hashmap->hash_table[bucket_index], key);
+    if (item_found == NULL) {
+        hash_item_t * item = hash_item_create(key, value, value_sz);
+        list_append(hashmap->hash_table[bucket_index], item);
+    } else {
+        for (int i = 0; i < value_sz; i++) {
+            value_append(item_found->value, value[i]);
+        }
+    }
 }
 
 linked_list_t * hashmap_get(hashmap_t * hashmap, char * key) {

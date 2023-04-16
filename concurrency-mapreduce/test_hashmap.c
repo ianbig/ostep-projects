@@ -10,19 +10,21 @@ unsigned long MR_DefaultHashPartition(char *key) {
 
 int main() {
     hashmap_t * map = hashmap_create(10, MR_DefaultHashPartition);
-    char * filename[] = {"a.txt", "b.txt", "c.txt", "d.txt"};
+    char * filename[] = {"a.txt", "b.txt", "c.txt", "d.txt", "a.txt", "d.txt"};
     int num[][1] = {
         { 10 },
         { 9 },
         { 2 },
         { 1 },
+        { 20 },
+        { 3 },
     };
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
         hashmap_insert(map, filename[i], num[i], 1);
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
         linked_list_t * list = hashmap_get(map, filename[i]);
         for (int j = 0; j < list->sz; j++) {
             hash_item_t * item = list_get(list, j);

@@ -1,15 +1,20 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "mapreduce.h"
 #include "tpool.h"
 #include "hashmap.h"
 
 void MR_Emit(char *key, char *value) {
-    // TODO: store the key value to TLS hashmap
-    printf("%s: %s\n", key, value);
-    
+    int values[1] = {0};
+    values[0] = strtol(value, NULL, 10);
+    if (value[0] == LONG_MAX || value[0] == LONG_MIN) {
+        return;
+    }
+
+    hashmap_insert(tls_hashmap, key, values, 1);
 }
 
 unsigned long MR_DefaultHashPartition(char *key, int num_partitions) {

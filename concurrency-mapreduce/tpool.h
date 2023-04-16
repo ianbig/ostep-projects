@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#include "hashmap.h"
+
 typedef void* (*thread_func_t)(void *);
 
 typedef struct _work_t {
@@ -46,6 +48,8 @@ typedef int bool;
 #define TRUE 1
 #define FALSE 0
 
+static __thread hashmap_t * tls_hashmap = NULL;
+
 typedef struct _tpool_t {
   work_queue_t work_queue;
   size_t working_thread_count;
@@ -61,6 +65,7 @@ int tpool_add_work(tpool_t * tpool, thread_func_t work, void * args);
 void tpool_wait(tpool_t * tpool);
 void tpool_destroy(tpool_t * tpool);
 static void * worker(void * args);
+unsigned long tpool_hashfunc(char * key);
 
 #endif
 

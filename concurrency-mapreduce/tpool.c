@@ -97,8 +97,7 @@ static void * worker(void * tpool_args) {
         return NULL;
     }
     
-    // TODO: make a hashmap that is thread local storage
-    // hashmap_t * hashmap =  hashmap_create(10);
+    tls_hashmap =  hashmap_create(tpool->working_thread_count, tpool_hashfunc);
 
     pthread_mutex_lock(&(tpool->tpool_lck));
     while (!tpool->start) {
@@ -124,6 +123,14 @@ static void * worker(void * tpool_args) {
     // TODO: push the hashmap value to the intermediate data strucutre
 
     return NULL;
+}
+
+unsigned long tpool_hashfunc(char * key) {
+    unsigned long hash = 5381;
+    int c;
+    while ((c = *key++) != '\0')
+        hash = hash * 33 + c;
+    return hash;
 }
 
 /**

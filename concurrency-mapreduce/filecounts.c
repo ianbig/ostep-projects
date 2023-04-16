@@ -32,5 +32,5 @@ void Reduce(char *key, Getter get_next, int partition_number) {
 }
 
 int main(int argc, char *argv[]) {
-    MR_Run(argc, argv, Map, 2, Reduce, 10, MR_DefaultHashPartition);
+    MR_Run(argc, argv, Map, 3, Reduce, 2, MR_DefaultHashPartition);
 }

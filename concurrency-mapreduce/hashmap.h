@@ -49,6 +49,7 @@ typedef struct _linked_list_t {
 linked_list_t * list_create();
 int list_append(linked_list_t * list, hash_item_t * item_to_append);
 hash_item_t * list_get(linked_list_t * list, size_t index);
+hash_item_t * list_find(linked_list_t * list, char * key);
 void list_print(linked_list_t * list);
 void list_destroy(linked_list_t * list);
 hash_item_t * list_pop(linked_list_t * list);
