@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -pthread
 
 OBJS = mapreduce.o tpool.o hashmap.o
-TESTS = test_thread_pool test_value test_list
+TESTS = test_thread_pool test_value test_list test_hashmap
 
 filecounts: $(OBJS) filecounts.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) filecounts.c
@@ -15,6 +15,8 @@ test_value: hashmap.h hashmap.c test_value.c
 	$(CC) $(CFLAGS) -o $@ hashmap.c test_value.c -DDEBUG
 test_list: hashmap.h hashmap.c test_list.c
 	$(CC) $(CFLAGS) -o $@ hashmap.c test_list.c -DDEBUG
+test_hashmap: hashmap.h hashmap.c test_hashmap.c
+	$(CC) $(CFLAGS) -o $@ test_hashmap.c hashmap.c -DDEBUG
 
 mapreduce.o: mapreduce.c mapreduce.h
 	$(CC) $(CFLAGS) -c mapreduce.c

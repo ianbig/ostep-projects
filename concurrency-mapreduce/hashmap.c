@@ -42,6 +42,20 @@ int value_append(value_t * value, int val) {
     return 0;
 }
 
+int value_get(value_t * value, size_t index) {
+    if (index >= value->sz) {
+        return -1;
+    }
+
+    int i = 0;
+    value_item_t * ptr = value->head->next;
+    while (i != index) {
+        ptr = ptr->next;
+        i++;
+    }
+    return ptr->value;
+}
+
 int value_pop(value_t * value) {
     if (value == NULL || !value->sz) { return -1; }
 
@@ -147,6 +161,21 @@ hash_item_t * list_pop(linked_list_t * list) {
     return item_to_remove;
 }
 
+hash_item_t * list_get(linked_list_t * list, size_t index) {
+    if (index >= list->sz) {
+        return NULL;
+    }
+
+    int i = 0;
+    hash_item_t * ptr = list->head->next;
+    while (i != index) {
+        ptr = ptr->next;
+        i++;
+    }
+
+    return ptr;
+}
+
 void list_print(linked_list_t * list) {
     hash_item_t * ptr = list->head;
     while (ptr != NULL) {
@@ -174,17 +203,38 @@ void list_destroy(linked_list_t * list) {
 }
 
 hashmap_t * hashmap_create(size_t bucket_sz, HashFunc hash_func) {
-    return NULL;
+    hashmap_t * hashmap = malloc(sizeof(*hashmap));
+    if ( hashmap == NULL ) { return NULL; }
+    hashmap->bucket_sz = bucket_sz;
+    hashmap->hash_func = hash_func;
+    hashmap->hash_table = malloc(sizeof(*(hashmap->hash_table)) * bucket_sz);
+    for (int i = 0; i < bucket_sz; i++) {
+        hashmap->hash_table[i] = list_create();
+        if (hashmap->hash_table[i] == NULL) {
+            return hashmap;
+        }
+    }
+
+    return hashmap;
 }
 
 void hashmap_destroy(hashmap_t * hashmap) {
-
+    for (int i = 0; i < hashmap->bucket_sz; i++) {
+        list_destroy(hashmap->hash_table[i]);
+    }
+    free(hashmap->hash_table);
+    hashmap->bucket_sz = - 1;
+    hashmap->hash_func = NULL;
+    free(hashmap);
 }
 
-void hashmap_insert(char * key, void * value) {
-
+void hashmap_insert(hashmap_t * hashmap, char * key, int * value, size_t value_sz) {
+    int bucket_index = hashmap->hash_func(key) % hashmap->bucket_sz;
+    hash_item_t * item = hash_item_create(key, value, value_sz);
+    list_append(hashmap->hash_table[bucket_index], item);
 }
 
-void * hashmap_get(char * key) {
-    return NULL;
+linked_list_t * hashmap_get(hashmap_t * hashmap, char * key) {
+    int bucket_index = hashmap->hash_func(key) % hashmap->bucket_sz;
+    return hashmap->hash_table[bucket_index];
 }
