@@ -7,13 +7,16 @@
 #include "tpool.h"
 #include "hashmap.h"
 
+extern __thread hashmap_t * tls_hashmap;
+
 void MR_Emit(char *key, char *value) {
     int values[1] = {0};
-    values[0] = strtol(value, NULL, 10);
-    if (value[0] == LONG_MAX || value[0] == LONG_MIN) {
+    long int converted = strtol(value, NULL, 10);
+    if (converted == LONG_MAX || converted == LONG_MIN) {
         return;
     }
 
+    values[0] = converted;
     hashmap_insert(tls_hashmap, key, values, 1);
 }
 
@@ -31,6 +34,7 @@ static void start_mapper(int num_mappers, Mapper map, int argc, char * argv[]) {
         char * filename = argv[i];
         tpool_add_work(threads_pool, (thread_func_t)map, filename);
     }
+
     tpool_start(threads_pool);
     tpool_wait(threads_pool);
     tpool_destroy(threads_pool);

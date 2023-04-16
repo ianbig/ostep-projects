@@ -1,11 +1,17 @@
 CC = gcc
-CFLAGS = -g -pthread
+CFLAGS = -g -pthread -DDEBUG
 
 OBJS = mapreduce.o tpool.o hashmap.o
 TESTS = test_value test_list test_hashmap
 
 filecounts: $(OBJS) filecounts.c
 	$(CC) $(CFLAGS) -o $@ $(OBJS) filecounts.c
+mapreduce.o: mapreduce.c mapreduce.h
+	$(CC) $(CFLAGS) -c mapreduce.c
+tpool.o: tpool.c tpool.h
+	$(CC) $(CFLAGS) -c tpool.c
+hashmap.o: hashmap.h hashmap.c
+	$(CC) $(CFLAGS) -c hashmap.c
 
 test: $(TESTS)
 	echo "compile test"
@@ -18,14 +24,9 @@ test_list: hashmap.h hashmap.c test_list.c
 test_hashmap: hashmap.h hashmap.c test_hashmap.c
 	$(CC) $(CFLAGS) -o $@ test_hashmap.c hashmap.c -DDEBUG
 
-mapreduce.o: mapreduce.c mapreduce.h
-	$(CC) $(CFLAGS) -c mapreduce.c
-tpool.o: tpool.c tpool.h
-	$(CC) $(CFLAGS) -c tpool.c
-hashmap.o: hashmap.h hashmap.c
-	$(CC) $(CFLAGS) -c hashmap.c
 
-
-.PHONY: clean
+.PHONY: clean exec
 clean:
 	rm $(OBJS) filecounts $(TESTS)
+exec:
+	./filecounts ./test/a.txt ./test/b.txt ./test/c.txt ./test/d.txt ./test/e.txt 

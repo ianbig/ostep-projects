@@ -68,6 +68,7 @@ hashmap_t * hashmap_create(size_t bucket_sz, HashFunc hash_func);
 void hashmap_destroy(hashmap_t * hashmap);
 void hashmap_insert(hashmap_t * hashmap, char * key, int * value, size_t value_sz);
 linked_list_t * hashmap_get(hashmap_t * hashmap, char * key);
+void hashmap_print(hashmap_t * hashmap);
 
 static int hash(void * key);
 

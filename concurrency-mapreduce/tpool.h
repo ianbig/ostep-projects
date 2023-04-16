@@ -48,8 +48,6 @@ typedef int bool;
 #define TRUE 1
 #define FALSE 0
 
-static __thread hashmap_t * tls_hashmap = NULL;
-
 typedef struct _tpool_t {
   work_queue_t work_queue;
   size_t working_thread_count;

@@ -88,7 +88,7 @@ hash_item_t * hash_item_create(char * key, int * values, size_t values_sz) {
     hash_item_t * item = malloc(sizeof(*item));
     if (item == NULL) { return NULL; }
 
-    item->key = malloc(sizeof(*(item->key) * strlen(key)) + 1);
+    item->key = malloc(sizeof(*(item->key)) * (strlen(key) + 1));
     if (item->key == NULL) { return NULL; }
     strncpy(item->key, key, strlen(key));
     item->key[strlen(key)] = '\0';
@@ -258,4 +258,10 @@ void hashmap_insert(hashmap_t * hashmap, char * key, int * value, size_t value_s
 linked_list_t * hashmap_get(hashmap_t * hashmap, char * key) {
     int bucket_index = hashmap->hash_func(key) % hashmap->bucket_sz;
     return hashmap->hash_table[bucket_index];
+}
+
+void hashmap_print(hashmap_t * hashmap) {
+    for (int i = 0; i < hashmap->bucket_sz; i++) {
+        list_print(hashmap->hash_table[i]);
+    }
 }

@@ -27,10 +27,10 @@ void Reduce(char *key, Getter get_next, int partition_number) {
     int count = 0;
     char *value;
     while ((value = get_next(key, partition_number)) != NULL)
-        count += atoi(value); // TODO: add error handling here
+        count++;
     printf("%s %d\n", key, count);
 }
 
 int main(int argc, char *argv[]) {
-    MR_Run(argc, argv, Map, 3, Reduce, 2, MR_DefaultHashPartition);
+    MR_Run(argc, argv, Map, 1, Reduce, 2, MR_DefaultHashPartition);
 }
