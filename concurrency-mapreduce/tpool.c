@@ -99,7 +99,7 @@ static void * worker(void * tpool_args) {
         return NULL;
     }
     
-    tls_hashmap =  hashmap_create(tpool->working_thread_count, tpool_hashfunc);
+    tls_hashmap =  hashmap_create(HASH_BUCKET, tpool_hashfunc);
     assert(tls_hashmap);
 
     pthread_mutex_lock(&(tpool->tpool_lck));
@@ -116,19 +116,20 @@ static void * worker(void * tpool_args) {
             break; 
         }
         work_to_process->task(work_to_process->args);
-        #ifdef DEBUG
-        printf("filenames: %s\n", (char*)work_to_process->args);
-        hashmap_print(tls_hashmap);
-        #endif
         work_destroy(work_to_process);
         
         pthread_mutex_lock(&(tpool->tpool_lck));
         tpool->work_queue.queue_sz--;
     }
-
+    #ifdef DEBUG
+        printf("thread info %ld:\n", (long)pthread_self());
+        hashmap_print(tls_hashmap);
+    #endif
+    
     tpool->working_thread_count--;
     pthread_cond_signal(&(tpool->exit_cond));
     pthread_mutex_unlock(&(tpool->tpool_lck));
+
 
     // TODO: push the hashmap value to the intermediate data strucutre
     hashmap_destroy(tls_hashmap);

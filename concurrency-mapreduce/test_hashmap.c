@@ -24,18 +24,7 @@ int main() {
         hashmap_insert(map, filename[i], num[i], 1);
     }
 
-    for (int i = 0; i < 6; i++) {
-        linked_list_t * list = hashmap_get(map, filename[i]);
-        for (int j = 0; j < list->sz; j++) {
-            hash_item_t * item = list_get(list, j);
-            printf("item keys: %s, value: [ ", item->key);
-            value_t * val = item->value;
-            for (int k = 0; k < val->sz; k++) {
-                printf("%d, ", value_get(val, k));
-            }
-            printf("]\n");
-        }
-    }
+    hashmap_print(map);
 
     hashmap_destroy(map);
 }

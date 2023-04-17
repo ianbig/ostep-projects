@@ -69,10 +69,11 @@ int value_pop(value_t * value) {
 }
 
 void value_print(value_t * value) {
+    if (value == NULL) { return; }
     value_item_t * ptr = value->head;
     while (ptr != NULL) {
         if (ptr->value == -1) {
-            printf("Dummy Node --> ");
+            // printf("Dummy Node --> ");
         } else {
             printf(" %d -->", ptr->value);
         }
@@ -99,6 +100,7 @@ hash_item_t * hash_item_create(char * key, int * values, size_t values_sz) {
     for (int i = 0; i < values_sz; i++) {
         value_append(item->value, values[i]);
     }
+    item->next = NULL;
 
     return item;
 }
@@ -177,10 +179,19 @@ hash_item_t * list_get(linked_list_t * list, size_t index) {
 }
 
 hash_item_t * list_find(linked_list_t * list, char * key) {
+    if (list == NULL || key == NULL) { return NULL; }
+
     hash_item_t * ptr = list->head->next;
     hash_item_t * res = NULL;
     while (ptr != NULL) {
-        if (strcmp(ptr->key, key) == 0) {
+        if (
+            strlen(key) == strlen(ptr->key) 
+        && 
+            (
+                strlen(key) == 0 
+                || 
+                strncmp(ptr->key, key, strlen(key)) == 0)
+            ) {
             res = ptr;
             break;
         }
@@ -191,17 +202,18 @@ hash_item_t * list_find(linked_list_t * list, char * key) {
 }
 
 void list_print(linked_list_t * list) {
+    if (list == NULL) { return; }
     hash_item_t * ptr = list->head;
     while (ptr != NULL) {
         if (ptr->key == NULL) {
-            printf("Dummy Node\n");
+            // printf("Dummy Node\n");
         } else {
             printf("%s: ", ptr->key);
             value_print(ptr->value);
         }
         ptr = ptr->next;
     }
-    printf("End of list\n");
+    printf("\n");
 }
 
 void list_destroy(linked_list_t * list) {
@@ -243,6 +255,8 @@ void hashmap_destroy(hashmap_t * hashmap) {
 }
 
 void hashmap_insert(hashmap_t * hashmap, char * key, int * value, size_t value_sz) {
+    if (!hashmap || !key || !value) { return; }
+
     int bucket_index = hashmap->hash_func(key) % hashmap->bucket_sz;
     hash_item_t * item_found = list_find(hashmap->hash_table[bucket_index], key);
     if (item_found == NULL) {
@@ -261,7 +275,9 @@ linked_list_t * hashmap_get(hashmap_t * hashmap, char * key) {
 }
 
 void hashmap_print(hashmap_t * hashmap) {
+    if (hashmap == NULL) { return; }
     for (int i = 0; i < hashmap->bucket_sz; i++) {
+        printf("[%d]: \n", i);
         list_print(hashmap->hash_table[i]);
     }
 }

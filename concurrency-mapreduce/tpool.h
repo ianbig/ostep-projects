@@ -6,6 +6,8 @@
 
 #include "hashmap.h"
 
+#define HASH_BUCKET 10
+
 typedef void* (*thread_func_t)(void *);
 
 typedef struct _work_t {
