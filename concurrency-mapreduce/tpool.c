@@ -3,6 +3,7 @@
 
 #include "tpool.h"
 #include "hashmap.h"
+#include "mapreduce.h"
 
  __thread hashmap_t * tls_hashmap = NULL;
 
@@ -121,6 +122,7 @@ static void * worker(void * tpool_args) {
         pthread_mutex_lock(&(tpool->tpool_lck));
         tpool->work_queue.queue_sz--;
     }
+
     #ifdef DEBUG
         printf("thread info %ld:\n", (long)pthread_self());
         hashmap_print(tls_hashmap);
@@ -132,6 +134,13 @@ static void * worker(void * tpool_args) {
 
 
     // TODO: push the hashmap value to the intermediate data strucutre
+    for (int i = 0; i < HASH_BUCKET; i++) {
+        linked_list_t * list = tls_hashmap->hash_table[i];
+        hash_item_t * tmp = NULL;
+        while ((tmp = list_pop(list)) != NULL) {
+            // TODO: add to intermediate storage
+        }
+    }
     hashmap_destroy(tls_hashmap);
     return NULL;
 }

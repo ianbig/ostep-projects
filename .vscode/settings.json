@@ -1,6 +1,8 @@
 {
   "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
   "files.associations": {
-    "hashmap.h": "c"
+    "hashmap.h": "c",
+    "mapreduce.h": "c",
+    "tpool.h": "c"
   }
 }

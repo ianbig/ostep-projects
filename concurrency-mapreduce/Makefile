@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -pthread -DDEBUG
+CFLAGS = -g -pthread
 
 OBJS = mapreduce.o tpool.o hashmap.o
 TESTS = test_value test_list test_hashmap
